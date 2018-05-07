@@ -1,7 +1,9 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
-
 from django.contrib.auth.models import BaseUserManager
+
+from entity.config import entity_registry
+
 
 
 class UserProfileManager(BaseUserManager):
@@ -53,3 +55,8 @@ class Player(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['first_name', 'last_name']
 
     objects = UserProfileManager()
+
+
+entity_registry.register_entity(Player)
+entity_registry.register_entity(Position)
+entity_registry.register_entity(Team)
