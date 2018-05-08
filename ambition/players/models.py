@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.contrib.auth.models import BaseUserManager
 
-from entity.config import entity_registry
+from entity.config import entity_registry, EntityConfig, register_entity
 
 
 
@@ -57,6 +57,18 @@ class Player(AbstractBaseUser, PermissionsMixin):
     objects = UserProfileManager()
 
 
-entity_registry.register_entity(Player)
-entity_registry.register_entity(Position)
+# entity_registry.register_entity(Player)
 entity_registry.register_entity(Team)
+
+@register_entity(Player)
+class PlayerConfig(EntityConfig):
+    def get_entity_meta(self, model_obj):
+        return {
+            'salary': model_obj.salary
+        }
+
+
+@register_entity(Position)
+class PositionConfig(EntityConfig):
+    def get_super_entities(self, model_obj):
+        return Player.objects.filter(position=model_obj)
