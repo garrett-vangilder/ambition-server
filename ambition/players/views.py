@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib.contenttypes.models import ContentType
 
 from rest_framework import generics, viewsets, mixins
@@ -22,31 +22,51 @@ class ListPositionsName(viewsets.ModelViewSet):
     serializer_class = TeamSerializer
 
 
-class ListSalariesByTeam(viewsets.ViewSet):
+class ListSalariesByPosition(viewsets.ViewSet):
     serializer_class = SalarySerializer
 
     def list(self, request):
         payload = []
+        team_entity = None
         
         # team entity lookup
-        team_entity = Entity.objects.get_for_obj(Team.objects.get(
-            name_abbreviated=self.request.GET.get('team_name').upper()))
-        
-        # TODO: Update for when a team is selected
-        if self.request.GET.get('team_name') == None:
+        if self.request.GET.get('team_name'):
+            team = get_object_or_404(Team,
+                name_abbreviated=self.request.GET.get('team_name').upper())
+            team_entity = Entity.objects.get_for_obj(team)
 
-            for position in Position.objects.all():
+        # loop through positions
+        for position in Position.objects.all():
 
-                position_entity = Entity.objects.get_for_obj(Position.objects.get(name=position.name))
+            position_entity = Entity.objects.get_for_obj(Position.objects.get(name=position.name))
+
+            # if there is a team then get intersection of team and position
+            if team_entity:
+                player_entities = set(position_entity.get_super_entities()) & set(team_entity.get_super_entities())
+            else:
                 player_entities = position_entity.get_super_entities()
-                salary = 0
+            
+            # figure out average salary
+            salary = 0
+            if len(player_entities) >= 1:
                 for player in player_entities:
                     salary = salary + int(player.entity_meta['salary'])
-                payload.append({ position.name : round((salary / len(player_entities)), 2)  })
+                
+                average = salary / len(player_entities)
+                value_in_dollars = round(average, 2)
+
+                # serialize
+                salary = SalarySerializer(data={'description': position.name, 'value_in_dollars': value_in_dollars})
+
+                # validate
+                salary.is_valid()
+
+                # append to route payload
+                payload.append(salary.data)
         
         return Response(payload)
 
 
-class ListSalariesByPosition(viewsets.ModelViewSet):
+class ListSalariesByTeam(viewsets.ModelViewSet):
     queryset = Position.objects.all()
     serializer_class = SalarySerializer

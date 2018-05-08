@@ -57,9 +57,6 @@ class Player(AbstractBaseUser, PermissionsMixin):
     objects = UserProfileManager()
 
 
-# entity_registry.register_entity(Player)
-entity_registry.register_entity(Team)
-
 @register_entity(Player)
 class PlayerConfig(EntityConfig):
     def get_entity_meta(self, model_obj):
@@ -72,3 +69,9 @@ class PlayerConfig(EntityConfig):
 class PositionConfig(EntityConfig):
     def get_super_entities(self, model_obj):
         return Player.objects.filter(position=model_obj)
+
+
+@register_entity(Team)
+class TeamConfig(EntityConfig):
+    def get_super_entities(self, model_obj):
+        return Player.objects.filter(team=model_obj)

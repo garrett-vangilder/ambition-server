@@ -14,6 +14,6 @@ class PositionSerializer(serializers.ModelSerializer):
 
 
 class SalarySerializer(serializers.Serializer):
-    descriptor = serializers.CharField(max_length=200)
+    description = serializers.CharField(max_length=200)
     value_in_dollars = serializers.IntegerField()
 
