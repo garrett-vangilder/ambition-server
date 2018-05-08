@@ -1,4 +1,5 @@
 import csv
+from entity.sync import sync_entities
 from data import teams, positions
 from players.models import Player, Team, Position 
 
@@ -35,3 +36,5 @@ def run():
                 team=team,
                 salary=int(salary))
             player.save()
+    print('syncing now')
+    sync_entities()
