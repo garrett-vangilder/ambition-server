@@ -1,1 +1,1 @@
-web: gunicorn ambition.wsgi:application --log-file -
+web: gunicorn --pythonpath ambition ambition.wsgi:application --log-file -
