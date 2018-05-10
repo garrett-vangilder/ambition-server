@@ -3,6 +3,7 @@ astroid==1.6.3
 certifi==2017.4.17
 chardet==3.0.4
 cryptography==1.9
+dj-database-url==0.5.0
 Django==2.0.4
 django-activatable-model==1.1.0
 django-entity==3.1.1
