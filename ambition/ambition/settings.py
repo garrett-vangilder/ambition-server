@@ -134,3 +134,6 @@ STATICFILES_DIRS = (
 )
 
 AUTH_USER_MODEL = 'players.Player'
+
+# heroku info 
+ALLOWED_HOSTS = ['vast-falls-69803.herokuapp.com']
